@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Questionari — Disseny Gràfic i Comunicació</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f4f0;
+    --gray-100: #e8e7e3;
+    --gray-200: #c8c7c2;
+    --gray-400: #888882;
+    --gray-600: #4a4a47;
+    --red: #c8291a;
+    --green: #1a7a3a;
+    --blue: #1a3a7a;
+    --accent: #c8291a;
+    --grid: 8px;
+  }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--white);
+    color: var(--black);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* DOT GRID BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, #b8b7b2 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-position: calc(50% - 356px) 16px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 24px 48px;
+  }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--black);
+    padding: 16px 0;
+    margin-bottom: 0;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .header-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    margin-bottom: 3px;
+  }
+
+  header h1 {
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  /* SCOREBOARD */
+  .scoreboard {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border: 1px solid var(--black);
+    background: var(--white);
+    margin-bottom: 0;
+  }
+
+  .score-cell {
+    padding: 14px 16px;
+    border-right: 1px solid var(--black);
+    text-align: center;
+  }
+  .score-cell:last-child { border-right: none; }
+
+  .score-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    margin-bottom: 4px;
+  }
+
+  .score-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  .score-val.correct { color: var(--green); }
+  .score-val.wrong   { color: var(--red); }
+  .score-val.pct     { color: var(--black); }
+
+  /* HEADER NAV BACK BUTTON */
+  header .nav {
+    margin: -14px 0px -14px 16px;
+    align-self: stretch;
+  }
+
+  /* QUESTION CARD */
+  .question-card {
+    background: var(--white);
+    border: 1px solid var(--black);
+    margin-bottom: 0;
+  }
+
+  .question-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--black);
+  }
+
+  .q-header-main {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .q-number {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--black);
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+    width: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
+    border-right: 1px solid var(--gray-200);
+    margin: -14px 0 -14px -20px;
+  }
+
+  .q-text {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.35;
+    flex: 1;
+    min-width: 0;
+    padding-left: 16px;
+  }
+
+  /* OPTIONS */
+  .options {
+    padding: 0;
+  }
+
+  .option-btn {
+    width: 100%;
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--gray-200);
+    padding: 0;
+    display: grid;
+    grid-template-columns: 46px 1fr;
+    align-items: stretch;
+    gap: 0;
+    cursor: pointer;
+    transition: background 0.12s;
+    text-align: left;
+    min-height: 44px;
+  }
+
+  .option-btn:last-child { border-bottom: none; }
+  .option-btn:hover:not(:disabled) { background: var(--gray-100); }
+  .option-btn:disabled { cursor: default; }
+
+  .opt-letter {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--gray-400);
+    border-right: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+    flex-shrink: 0;
+    align-self: stretch;
+  }
+
+  .opt-text {
+    font-size: 14px;
+    color: var(--black);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* States — full square fill */
+  .option-btn.correct-ans .opt-letter {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+  .option-btn.correct-ans { background: color-mix(in srgb, var(--green) 8%, var(--white)); }
+  .option-btn.correct-ans .opt-text { color: var(--green); font-weight: 500; }
+
+  .option-btn.wrong-ans .opt-letter {
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff;
+  }
+  .option-btn.wrong-ans { background: color-mix(in srgb, var(--red) 8%, var(--white)); }
+  .option-btn.wrong-ans .opt-text { color: var(--red); }
+
+  .option-btn.reveal-correct .opt-letter {
+    border-right-color: var(--green);
+    color: var(--green);
+  }
+  .option-btn.reveal-correct .opt-text { color: var(--green); }
+
+  /* FEEDBACK */
+  .feedback {
+    display: none;
+    padding: 12px 20px;
+    border-top: 1px solid var(--black);
+    background: var(--gray-100);
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .feedback.show { display: flex; }
+
+  .feedback-icon {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 6px;
+    flex-shrink: 0;
+  }
+
+  .feedback-icon.ok  { background: var(--green); color: #fff; }
+  .feedback-icon.err { background: var(--red); color: #fff; }
+
+  .feedback-text {
+    font-size: 13px;
+    color: var(--gray-600);
+    line-height: 1.45;
+  }
+
+  /* NAV — arrow buttons flush with card border */
+  .nav {
+    display: flex;
+    flex-shrink: 0;
+    align-self: stretch;
+    /* cancel out header padding so buttons touch card edges */
+    margin: -14px -20px -14px 16px;
+  }
+
+  .nav-btn {
+    width: 48px;
+    height: 48px;
+    background: var(--white);
+    border: none;
+    border-left: 1px solid var(--black);
+    cursor: pointer;
+    transition: background 0.12s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  .nav-btn svg { display: block; pointer-events: none; }
+  .nav-btn:hover:not(:disabled) { background: var(--gray-100); }
+  .nav-btn:disabled { display: none; }
+  .nav-btn.primary { background: var(--black); }
+  .nav-btn.primary svg line,
+  .nav-btn.primary svg polyline,
+  .nav-btn.primary svg path { stroke: var(--white); }
+  .nav-btn.primary:hover:not(:disabled) { background: var(--gray-600); }
+
+  /* PROGRESS BAR */
+  .minimap {
+    margin-bottom: 0;
+    display: flex;
+    width: 100%;
+    height: 12px;
+    border: 1px solid var(--black);
+    overflow: visible;
+    position: relative;
+  }
+
+  .mm-dot {
+    flex: 1;
+    height: 100%;
+    background: var(--white);
+    cursor: pointer;
+    position: relative;
+  }
+
+  /* tick: vertical line that doesn't touch top/bottom borders */
+  .mm-dot::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--black);
+    pointer-events: none;
+    z-index: 3;
+  }
+  .mm-dot:last-child::after { display: none; }
+
+  .mm-dot.answered-ok  { background: var(--green); }
+  .mm-dot.answered-err { background: var(--red); }
+  /* current segment: outline cap a fora sense clipar */
+  .mm-dot.current      { z-index: 10; }
+  .mm-dot.current::before {
+    content: '';
+    position: absolute;
+    inset: -2px 0;
+    border: 2px solid var(--black);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* RESULTS PAGE */
+  #results-panel {
+    display: none;
+  }
+  #results-panel.show { 
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .res-table {
+    border: 1px solid var(--black);
+    width: 100%;
+    margin-bottom: 0;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border-left: 1px solid var(--black);
+    border-right: 1px solid var(--black);
+  }
+
+  .res-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    border-right: 1px solid var(--black);
+    align-items: stretch;
+  }
+
+  .res-row:last-child { border-right: none; }
+
+  .res-row-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    padding: 4px 20px;
+    text-align: center;
+  }
+
+  .res-row-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 24px;
+    font-weight: 500;
+    padding: 4px 20px;
+    text-align: center;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .res-row-val.nota { font-size: 32px; font-weight: 700; }
+  .res-row-val.correct { color: var(--green); }
+  .res-row-val.wrong   { color: var(--red); }
+
+  .res-grade-box {
+    border: 1px solid var(--black);
+    border-top: none;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 0;
+    margin-top: 0;
+    border-left: 1px solid var(--black);
+    border-right: 1px solid var(--black);
+  }
+
+  /* WRONG REVIEW */
+  .res-review {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .res-review-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    margin-bottom: 0;
+    margin-top: 0;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--black);
+    border-left: 1px solid var(--black);
+    border-right: 1px solid var(--black);
+  }
+
+  .review-items-container {
+    border: 1px solid var(--black);
+    background: var(--white);
+    margin-top: 0;
+    margin-bottom: 0;
+    border-top: none;
+    border-left: 1px solid var(--black);
+    border-right: 1px solid var(--black);
+  }
+
+  .review-item {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 12px;
+    padding: 12px;
+    border-bottom: 1px solid var(--gray-200);
+    background: var(--white);
+    align-items: start;
+  }
+
+  .review-item:last-child {
+    border-bottom: none;
+  }
+
+  .review-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--gray-400);
+    padding-top: 2px;
+  }
+
+  .review-q { font-size: 13px; color: var(--gray-600); margin-bottom: 4px; }
+  .review-ans { font-size: 13px; font-weight: 500; }
+  .review-ans span { color: var(--green); }
+
+  .res-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 0;
+    border: 1px solid var(--black);
+    border-top: none;
+    border-left: 1px solid var(--black);
+    border-right: 1px solid var(--black);
+  }
+
+  .restart-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 16px 20px;
+    background: var(--black);
+    color: var(--white);
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.12s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .restart-btn.secondary {
+    background: var(--white);
+    color: var(--black);
+    border-left: 1px solid var(--black);
+  }
+
+  .restart-btn:hover { opacity: 0.75; }
+
+  /* MODE SELECTION SCREEN */
+  #mode-screen {
+    display: block;
+  }
+  #mode-screen.hidden { display: none; }
+
+  .mode-title {
+    border-bottom: 2px solid var(--black);
+    padding: 32px 0 20px;
+    margin-bottom: 40px;
+  }
+
+  .mode-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+    margin-top: 24px;
+  }
+
+  .mode-btn {
+    border: 1px solid var(--black);
+    background: var(--white);
+    padding: 24px 20px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.12s;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .mode-btn:hover {
+    background: var(--black);
+    color: var(--white);
+  }
+
+  .mode-btn:hover .mode-sub { color: var(--gray-200); }
+
+  .mode-btn.exam {
+    border-color: var(--black);
+    border-width: 2px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .mode-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 36px;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  .mode-label {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .mode-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--gray-400);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .mode-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: var(--black);
+    color: var(--white);
+    padding: 3px 8px;
+  }
+
+  .mode-btn.exam:hover .mode-badge {
+    background: var(--white);
+    color: var(--black);
+  }
+
+  #quiz-area { display: none; }
+  #quiz-area.visible { display: block; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- MODE SELECTION SCREEN -->
+  <div id="mode-screen">
+    <header>
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+          <div class="header-label" style="margin-bottom:0;">Disseny Gràfic i Comunicació</div>
+          <div class="header-label" style="margin-bottom:0;">David Martínez Gregorio</div>
+        </div>
+        <h1>Tria el mode<br>de pràctica</h1>
+      </div>
+    </header>
+
+    <div class="mode-grid">
+      <button class="mode-btn" onclick="startQuiz(10)">
+        <div class="mode-num">10</div>
+        <div class="mode-label">Preguntes</div>
+        <div class="mode-sub">Repàs ràpid</div>
+      </button>
+      <button class="mode-btn" onclick="startQuiz(25)">
+        <div class="mode-num">25</div>
+        <div class="mode-label">Preguntes</div>
+        <div class="mode-sub">Sessió mitja</div>
+      </button>
+      <button class="mode-btn" onclick="startQuiz(50)">
+        <div class="mode-num">50</div>
+        <div class="mode-label">Preguntes</div>
+        <div class="mode-sub">Pràctica completa</div>
+      </button>
+      <button class="mode-btn exam" onclick="startQuiz(100)">
+        <div>
+          <div class="mode-num">100</div>
+          <div class="mode-label">Simulacre d'examen</div>
+          <div class="mode-sub">Els 4 temes · Penalització −0.5</div>
+        </div>
+        <div class="mode-badge">Exam</div>
+      </button>
+    </div>
+
+    <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--gray-400);letter-spacing:0.05em;">
+      Les preguntes i les respostes es barregen aleatòriament en cada sessió.
+    </p>
+  </div>
+
+  <!-- QUIZ AREA -->
+  <div id="quiz-area" style="display:none;flex-direction:column;gap:24px;">
+  <header>
+    <div>
+      <h1>Questionari de preparació</h1>
+    </div>
+    <div class="nav">
+      <button class="nav-btn" onclick="goToModeSelect()" title="Tornar a l'inici">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="16" y1="10" x2="3" y2="10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
+          <polyline points="8,4 3,10 8,16" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter" fill="none"/>
+          <line x1="3" y1="4" x2="3" y2="16" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- MINIMAP -->
+  <div class="minimap" id="minimap"></div>
+
+  <!-- SCOREBOARD -->
+  <div class="scoreboard">
+    <div class="score-cell">
+      <div class="score-label">Correctes</div>
+      <div class="score-val correct" id="sc-ok">0</div>
+    </div>
+    <div class="score-cell">
+      <div class="score-label">Incorrectes</div>
+      <div class="score-val wrong" id="sc-err">0</div>
+    </div>
+    <div class="score-cell">
+      <div class="score-label">Restants</div>
+      <div class="score-val" id="sc-rem">0</div>
+    </div>
+    <div class="score-cell">
+      <div class="score-label">Encert</div>
+      <div class="score-val pct" id="sc-pct">—</div>
+    </div>
+    <div class="score-cell">
+      <div class="score-label">Nota /10</div>
+      <div class="score-val pct" id="sc-nota">—</div>
+    </div>
+  </div>
+
+  <!-- QUESTION -->
+  <div class="question-card" id="q-card">
+    <div class="question-header">
+      <div class="q-header-main">
+        <span class="q-number" id="q-num">01 / 50</span>
+        <span class="q-text" id="q-text"></span>
+      </div>
+      <div class="nav">
+        <button class="nav-btn" id="btn-prev" onclick="navigate(-1)" disabled>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="16" y1="10" x2="3" y2="10" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square"/>
+            <polyline points="8,4 3,10 8,16" stroke="#0a0a0a" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter" fill="none"/>
+          </svg>
+        </button>
+        <button class="nav-btn primary" id="btn-next" onclick="navigate(1)">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="4" y1="10" x2="17" y2="10" stroke="white" stroke-width="1.5" stroke-linecap="square"/>
+            <polyline points="12,4 17,10 12,16" stroke="white" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter" fill="none"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback">
+      <span class="feedback-icon" id="fb-icon"></span>
+      <span class="feedback-text" id="fb-text"></span>
+    </div>
+  </div>
+
+  <!-- RESULTS PAGE -->
+  <div id="results-panel">
+
+    <div class="res-table">
+      <div class="res-row">
+        <div class="res-row-label">Nota</div>
+        <div class="res-row-val nota" id="res-nota">—</div>
+      </div>
+      <div class="res-row">
+        <div class="res-row-label">Correctes</div>
+        <div class="res-row-val correct" id="res-ok">—</div>
+      </div>
+      <div class="res-row">
+        <div class="res-row-label">Incorrectes</div>
+        <div class="res-row-val wrong" id="res-err">—</div>
+      </div>
+      <div class="res-row">
+        <div class="res-row-label">Precisió</div>
+        <div class="res-row-val" id="res-pct">—</div>
+      </div>
+      <div class="res-row">
+        <div class="res-row-label">Punts bruts</div>
+        <div class="res-row-val" id="res-pts">—</div>
+      </div>
+    </div>
+
+    <div class="res-grade-box" id="res-grade-box">
+      <span id="res-grade"></span>
+    </div>
+
+    <div class="res-review" id="res-review"></div>
+
+    <div class="res-actions">
+      <button class="restart-btn" onclick="restart()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.5 8A5.5 5.5 0 1 1 8 2.5c1.8 0 3.4.87 4.4 2.2" stroke="white" stroke-width="1.4" stroke-linecap="square"/><polyline points="13,2 13.5,4.7 10.8,5.2" stroke="white" stroke-width="1.4" stroke-linecap="square" stroke-linejoin="miter" fill="none"/></svg>
+        Tornar a intentar
+      </button>
+      <button class="restart-btn secondary" onclick="goToModeSelect()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1.5" y="1.5" width="5" height="5" stroke="#0a0a0a" stroke-width="1.4"/><rect x="9.5" y="1.5" width="5" height="5" stroke="#0a0a0a" stroke-width="1.4"/><rect x="1.5" y="9.5" width="5" height="5" stroke="#0a0a0a" stroke-width="1.4"/><rect x="9.5" y="9.5" width="5" height="5" stroke="#0a0a0a" stroke-width="1.4"/></svg>
+        Canviar mode
+      </button>
+    </div>
+  </div>
+  </div><!-- end quiz-area -->
+</div>
+
+<script>
+const ALL_QUESTIONS = [
+  {
+    text: "Quin és l’objectiu central del disseny gràfic segons el temari?",
+    options: ["Satisfer necessitats de comunicació visual i transmetre un missatge eficaçment.", "Reproduir tendències visuals del moment sense estudiar el públic ni la finalitat.", "Decorar superfícies amb elements atractius, encara que no comuniquin cap missatge.", "Prioritzar la creativitat personal per damunt de les necessitats de l’usuari."],
+    correct: 0,
+    explanation: "El disseny gràfic utilitza recursos visuals per comunicar un missatge adequat a l’usuari i assolir un objectiu."
+  },
+  {
+    text: "Com s’ha d’interpretar el principi «la forma segueix la funció»?",
+    options: ["La composició ha de prioritzar la decoració perquè la funció s’entengui visualment després.", "Cada decisió visual ha de tenir una raó i ajudar a comunicar correctament el missatge.", "La forma ha de seguir sempre un estil geomètric, encara que el contingut sigui emocional.", "Les decisions formals s’han de prendre abans de conèixer el missatge i el públic destinatari."],
+    correct: 1,
+    explanation: "La forma no és gratuïta: els elements i les decisions de disseny han de poder justificar-se per la funció comunicativa."
+  },
+  {
+    text: "En el model de comunicació visual del temari, quina relació és correcta?",
+    options: ["El dissenyador emet els objectius comercials, el canal els rep i l’empresa els interpreta.", "L’empresa o organització emet, el dissenyador codifica i el públic destinatari rep.", "El canal emet el missatge, el públic el codifica i el dissenyador determina les necessitats.", "El públic destinatari emet, l’empresa codifica i el dissenyador rep el missatge acabat."],
+    correct: 1,
+    explanation: "L’emissor sol ser l’empresa o organització, el dissenyador actua com a codificador i el receptor és el públic destinatari."
+  },
+  {
+    text: "Com es pot comprovar l’eficàcia d’una intenció comunicativa?",
+    options: ["Comparant el nombre de recursos gràfics amb el pressupost total del projecte.", "Mesurant si el disseny incorpora totes les tendències visuals disponibles al moment.", "Relacionant els resultats de l’acció amb els objectius que s’havien establert.", "Valorant exclusivament si la peça agrada a qui l’ha dissenyada i produïda."],
+    correct: 2,
+    explanation: "El temari vincula l’eficàcia de la comunicació amb el grau d’assoliment dels objectius establerts."
+  },
+  {
+    text: "Què determina principalment el format del canal o suport comunicatiu?",
+    options: ["La mida màxima del document, sense considerar el context on es llegirà.", "El destí i l’objectiu del missatge, juntament amb el context del receptor.", "La preferència formal del dissenyador, independentment del públic i de l’ús final.", "El nombre de colors disponibles i la família tipogràfica que s’ha triat inicialment."],
+    correct: 1,
+    explanation: "El canal s’escull segons el destí del missatge, la seva finalitat i el context del receptor."
+  },
+  {
+    text: "Quina investigació sobre el receptor afavoreix més una comunicació efectiva?",
+    options: ["Definir els colors preferits de l’empresa i assumir que també agradaran als consumidors.", "Conèixer només l’edat mitjana, sense estudiar interessos, necessitats ni context cultural.", "Conèixer qui és, què necessita, què li preocupa i on se’l pot trobar.", "Identificar els gustos personals de l’equip creatiu i aplicar-los al públic sense contrastar-los."],
+    correct: 2,
+    explanation: "Per comunicar amb eficàcia cal conèixer les característiques, necessitats, preocupacions i canals del públic."
+  },
+  {
+    text: "Què significa que un signe visual sigui polisèmic?",
+    options: ["Que un signe es percep només a través de les seves parts, sense considerar el conjunt.", "Que un signe necessita sempre text explicatiu per tenir qualsevol significat visual.", "Que un signe només pot comunicar un significat universal, independentment de la cultura.", "Que un mateix signe pot admetre interpretacions diferents segons qui el percep."],
+    correct: 3,
+    explanation: "La polisèmia descriu la possibilitat que un mateix signe sigui interpretat de diverses maneres."
+  },
+  {
+    text: "Quina afirmació descriu millor la percepció visual que explica el temari?",
+    options: ["El signe s’interpreta com un conjunt, i les parts cobren sentit dins d’aquest tot.", "El receptor sempre reconeix primer els detalls i només després identifica el conjunt.", "El color és l’únic component que determina la interpretació de qualsevol composició.", "Cada part visual es processa de manera independent i no modifica la lectura general."],
+    correct: 0,
+    explanation: "La percepció tracta el signe visual com un tot; les parts s’entenen en relació amb el conjunt."
+  },
+  {
+    text: "Quina afirmació resumeix correctament diverses lleis d’organització perceptiva?",
+    options: ["La proximitat uneix només colors iguals, la similitud agrupa elements llunyans i el tancament elimina formes conegudes.", "La proximitat crea contrast, la similitud determina el pes visual i el tancament separa elements relacionats.", "La proximitat ordena objectius, la similitud defineix el canal i el tancament verifica la intenció comunicativa.", "La proximitat agrupa elements propers, la similitud agrupa semblants i el tancament completa formes incompletes."],
+    correct: 3,
+    explanation: "Les lleis de proximitat, similitud i tancament expliquen com agrupem elements i completem formes a la percepció."
+  },
+  {
+    text: "Quin efecte busca la simplicitat visual vinculada a la llei de Pragnanz?",
+    options: ["Incrementar la complexitat perquè el receptor hagi d’interpretar cada detall per separat.", "Fer que les formes asimètriques i irregulars sempre dominin la composició.", "Afegir més elements decoratius per mantenir l’atenció durant tota la lectura.", "Afavorir una percepció clara mitjançant formes regulars, simples i concises."],
+    correct: 3,
+    explanation: "Les formes simples, regulars i concises tenen més possibilitats d’imposar-se a la percepció."
+  },
+  {
+    text: "Què implica la idea que «el tot» també comunica?",
+    options: ["Que totes les decisions visibles o implícites del signe contribueixen al missatge.", "Que l’espectador interpreta únicament els elements més grans i ignora els secundaris.", "Que el disseny es pot valorar sense tenir en compte el context ni el suport final.", "Que només el missatge escrit comunica, mentre que els detalls visuals són neutres."],
+    correct: 0,
+    explanation: "El temari destaca que totes les decisions implícites en un signe visual comuniquen."
+  },
+  {
+    text: "Quina classificació dels elements bàsics del disseny és la correcta?",
+    options: ["Punt, línia, àrea i volum.", "Forma, mesura, color i textura.", "Alineació, contrast, èmfasi i proporció.", "Posició, direcció, espai i gravetat."],
+    correct: 0,
+    explanation: "Punt, línia, àrea i volum són els elements bàsics; les altres opcions corresponen a altres categories."
+  },
+  {
+    text: "Quins elements pertanyen a la categoria d’elements visuals?",
+    options: ["Posició, direcció, espai i gravetat.", "Punt, línia, àrea i volum.", "Alineació, proximitat, equilibri i repetició.", "Forma, mesura, color i textura."],
+    correct: 3,
+    explanation: "El temari agrupa forma, mesura, color i textura com a elements visuals."
+  },
+  {
+    text: "Què defineix el principi d’alineació en una composició?",
+    options: ["La diferència de color, mida o forma que hi ha entre dos elements relacionats.", "La distribució dels elements segons el seu pes visual dins de l’espai disponible.", "La manera d’organitzar els elements respecte d’unes línies o referències comunes.", "La distància entre els elements que permet formar grups visualment diferenciats."],
+    correct: 2,
+    explanation: "L’alineació és la forma d’organitzar els elements d’una composició."
+  },
+  {
+    text: "Quina funció té principalment el contrast en el disseny?",
+    options: ["Apropar elements relacionats per indicar que formen part del mateix grup.", "Distribuir pesos visuals per aconseguir una sensació d’estabilitat a la composició.", "Repetir formes semblants per crear continuïtat i una aparença uniforme.", "Fer perceptibles diferències entre elements perquè es distingeixin entre si."],
+    correct: 3,
+    explanation: "El contrast és la diferència entre elements relacionats i ajuda a distingir-los."
+  },
+  {
+    text: "Quina decisió aplicaria correctament el principi de proximitat?",
+    options: ["Situar junts un títol i el paràgraf que explica, i separar-los d’altres blocs.", "Fer més gran qualsevol element secundari per evitar que quedi a prop del títol.", "Posar cada element a la mateixa distància de tots els altres, encara que no es relacionin.", "Aplicar el mateix color a tots els components, independentment de la seva funció."],
+    correct: 0,
+    explanation: "La proximitat fa visibles les agrupacions entre elements relacionats i les diferencia de la resta."
+  },
+  {
+    text: "Com es defineix l’equilibri visual segons el temari?",
+    options: ["Com la repetició exacta d’una mateixa forma en tots els espais de la composició.", "Com la distribució dels elements en l’espai segons el seu pes visual.", "Com la relació matemàtica entre l’alçada del text i l’amplada de la pàgina.", "Com la capacitat d’un element per destacar per damunt de tots els altres."],
+    correct: 1,
+    explanation: "L’equilibri es basa en com es distribueixen els elements i el seu pes visual."
+  },
+  {
+    text: "Quin ús de la repetició és coherent amb els principis del disseny?",
+    options: ["Canviar tots els elements de cada pàgina perquè no es repeteixi cap patró visual.", "Augmentar sempre la mida de l’element repetit fins que domini el contingut.", "Substituir l’ordre de lectura per una seqüència aleatòria de recursos decoratius.", "Repetir o alternar elements semblants per reforçar la coherència de la composició."],
+    correct: 3,
+    explanation: "La repetició consisteix a repetir o alternar elements semblants entre si."
+  },
+  {
+    text: "Quina diferència hi ha entre èmfasi i jerarquia visual?",
+    options: ["L’èmfasi destaca un element; la jerarquia ordena els elements segons la rellevància.", "L’èmfasi crea espai en blanc; la jerarquia determina la resolució de les imatges.", "L’èmfasi defineix el canal; la jerarquia estableix els objectius comercials del projecte.", "L’èmfasi distribueix el pes visual; la jerarquia repeteix elements per crear ritme."],
+    correct: 0,
+    explanation: "L’èmfasi ressalta un element concret, mentre que la jerarquia classifica tots els elements segons la importància."
+  },
+  {
+    text: "Per què l’espai en blanc és un recurs de disseny i no pas espai malgastat?",
+    options: ["Per substituir qualsevol necessitat de jerarquia i eliminar el contingut menys vistós.", "Per assegurar que tots els elements tinguin exactament el mateix pes visual.", "Per separar elements, millorar la lectura i donar respiració a la composició.", "Per augmentar automàticament la resolució del document abans de preparar-lo per imprimir."],
+    correct: 2,
+    explanation: "L’espai en blanc és un element de la composició que facilita l’organització i també transmet significat."
+  },
+  {
+    text: "A què fa referència la proporció en el disseny gràfic?",
+    options: ["A la quantitat d’icones que es poden afegir abans que el document ocupi massa espai.", "A la diferència entre el color de fons i el color dominant d’una peça gràfica.", "A la relació entre la mida visual i el pes de dos o més elements gràfics.", "A la distància exacta entre columnes, que ha de ser sempre igual en qualsevol retícula."],
+    correct: 2,
+    explanation: "El temari defineix la proporció com la relació entre la mida visual i el pes dels elements."
+  },
+  {
+    text: "Quina diferència descriu millor el ritme i el moviment en una composició?",
+    options: ["El ritme varia elements respecte dels altres; el moviment crea sensació de dinamisme.", "El ritme defineix la relació del signe amb el concepte; el moviment descriu la seva mida.", "El ritme depèn només del color; el moviment depèn només de l’alineació tipogràfica.", "El ritme classifica continguts per importància; el moviment manté tots els elements immòbils."],
+    correct: 0,
+    explanation: "El ritme es relaciona amb la variació d’un element respecte dels altres; el moviment crea dinamisme visual."
+  },
+  {
+    text: "Què persegueixen l’harmonia i la unitat en un disseny?",
+    options: ["Que el contrast sigui màxim en tots els elements sense cap relació entre ells.", "Que les parts s’integrin i funcionin com un conjunt coherent.", "Que cada part utilitzi un estil diferent per accentuar la seva independència visual.", "Que la composició tingui simetria absoluta encara que contradigui el missatge."],
+    correct: 1,
+    explanation: "Harmonia i unitat fan que les parts de la composició s’uneixin en un conjunt harmoniós."
+  },
+  {
+    text: "Quina descripció de la metodologia i les tècniques creatives és correcta?",
+    options: ["Les fases són moodboard, retícula, fotografia i exportació; les tècniques creatives serveixen per verificar drets d’autor.", "Les fases són investigació, definició, disseny, implementació i iteració; tècniques creatives ajuden a generar alternatives.", "Les fases són briefing, compra de mitjans i posicionament; les tècniques creatives substitueixen la investigació del públic.", "Les fases són impressió, publicació, venda i distribució; les tècniques creatives s’apliquen quan el disseny ja és definitiu."],
+    correct: 1,
+    explanation: "El procés inclou investigació, definició, disseny, implementació i iteració; els mètodes creatius guien la generació d’idees."
+  },
+  {
+    text: "Quina parella d’eines està ben descrita en la fase de definició d’un projecte?",
+    options: ["El brief fixa únicament els colors corporatius; el moodboard substitueix la investigació del públic objectiu.", "El brief defineix la resolució final; el moodboard conté les marques de tall i el sagnat d’impressió.", "El brief recull necessitats i objectius; el moodboard plasma les línies estètiques del projecte.", "El brief és una seqüència de vinyetes; el moodboard verifica les fonts i l’exactitud de les dades."],
+    correct: 2,
+    explanation: "El brief recull informació necessària per desenvolupar el projecte; el moodboard mostra look and feel, tipografia, colors i inspiració."
+  },
+  {
+    text: "Quina tasca defineix el disseny editorial?",
+    options: ["Maquetar i compondre publicacions com llibres, revistes, catàlegs i diaris.", "Crear exclusivament fotografies publicitàries per a campanyes digitals i televisives.", "Convertir qualsevol imatge en un dibuix vectorial preparat per a pàgines web.", "Dissenyar només la identitat visual d’empreses, sense treballar amb textos llargs."],
+    correct: 0,
+    explanation: "El disseny editorial és la branca del disseny gràfic dedicada a la maquetació i composició de publicacions."
+  },
+  {
+    text: "Quina diferència hi ha entre composició i jerarquia visual?",
+    options: ["La composició defineix el públic objectiu; la jerarquia decideix quin canal publicitari s’utilitza.", "La composició tracta només del color; la jerarquia tracta exclusivament del format de pàgina.", "La composició determina la família tipogràfica; la jerarquia selecciona el sistema d’impressió.", "La composició distribueix els elements; la jerarquia els ordena segons la importància."],
+    correct: 3,
+    explanation: "La composició organitza els elements dins d’un conjunt; la jerarquia crea un ordre visual per guiar el lector."
+  },
+  {
+    text: "En una composició que aplica la regla dels terços, on se situen punts d’interès habituals?",
+    options: ["A les quatre cantonades exteriors, evitant els espais pròxims al centre de la imatge.", "Només al centre exacte del format, perquè qualsevol altra posició genera desequilibri.", "A les interseccions de les línies que divideixen el format en terços.", "Al llarg d’una única línia horitzontal situada a la meitat de l’alçada del format."],
+    correct: 2,
+    explanation: "La regla dels terços destaca els punts d’intersecció de les divisions en terços."
+  },
+  {
+    text: "Quina lectura compositiva acostuma a transmetre una imatge asimètrica?",
+    options: ["Pot aportar dinamisme, mentre que la simetria sol suggerir equilibri o estabilitat.", "Garanteix un recorregut visual perfecte, mentre que la simetria impedeix identificar el centre.", "No influeix en l’experiència visual, ja que només la tipografia condiciona la composició.", "Transmet sempre desordre, mentre que la simetria produeix una sensació de moviment intens."],
+    correct: 0,
+    explanation: "El temari associa les imatges simètriques a una composició equilibrada o estàtica i l’asimetria al dinamisme."
+  },
+  {
+    text: "Quan un subjecte sembla moure’s cap a la dreta, quin recurs pot reforçar la sensació de moviment?",
+    options: ["Inclinar totes les línies horitzontals i verticals, encara que es busqui estabilitat visual.", "Deixar espai en blanc davant del subjecte, en la direcció en què avança.", "Deixar tot l’espai lliure darrere del subjecte i col·locar-lo enganxat al límit frontal.", "Centrar tots els elements secundaris sobre el subjecte i eliminar qualsevol espai buit."],
+    correct: 1,
+    explanation: "El temari recomana deixar espai davant de l’element que es mou perquè sembli que pot continuar avançant."
+  },
+  {
+    text: "Quin recorregut de lectura s’ha de buscar en una composició editorial?",
+    options: ["Un recorregut en què tots els elements tinguin el mateix pes i es disputin l’atenció.", "Un recorregut que comenci sempre per les notes al peu i acabi al títol principal.", "Un recorregut ordenat i fluid, sense salts ni obstacles que dificultin analitzar el contingut.", "Un recorregut aleatori perquè cada lector hagi de reconstruir la jerarquia a partir dels detalls."],
+    correct: 2,
+    explanation: "La lectura ha de seguir una jerarquia clara i un recorregut visual sense entrebancs."
+  },
+  {
+    text: "Quina decisió ajuda a distingir el títol d’un paràgraf i alhora manté els elements relacionats?",
+    options: ["Assignar un color aleatori a cada frase i dispersar els paràgrafs per tota la pàgina.", "Donar la mateixa mida i el mateix pes a tots els textos i separar el títol del seu paràgraf.", "Utilitzar nivells tipogràfics diferenciats i mantenir propers el títol i el text corresponent.", "Fer que tots els subtítols siguin més grans que el títol i que les imatges principals."],
+    correct: 2,
+    explanation: "Els nivells de jerarquia i la proximitat entre títol i paràgraf fan explícita la relació entre continguts."
+  },
+  {
+    text: "Quina associació entre família tipogràfica i ús s’ajusta al temari?",
+    options: ["Les decorative són neutres i atemporals, per la qual cosa no depenen de la cultura ni de la moda.", "Les script són ideals per a grans blocs de text perquè mantenen una llegibilitat molt alta.", "Les serif són habituals en textos llargs impresos i sovint transmeten un to clàssic.", "Les sans serif només serveixen per a titulars impresos i resulten poc adequades en pantalles."],
+    correct: 2,
+    explanation: "El temari associa les serif a la lectura de textos llargs impresos i a una aparença clàssica i conservadora."
+  },
+  {
+    text: "Quina característica descriu millor una tipografia sans serif?",
+    options: ["Es basa en ornaments culturals canviants i pot quedar molt lligada a modes concretes.", "Presenta remats als extrems dels traços i s’associa sobretot a publicacions impreses tradicionals.", "Imita la cal·ligrafia manual i s’acostuma a reservar per a títols curts i expressius.", "Té un aspecte net i modern, amb bona llegibilitat i ús freqüent en entorns digitals."],
+    correct: 3,
+    explanation: "Les sans serif es descriuen com a netes, modernes, llegibles i freqüents en suports digitals."
+  },
+  {
+    text: "Per què convé limitar l’ús de tipografies script en blocs llargs?",
+    options: ["Perquè la seva aparença manuscrita o cal·ligràfica pot dificultar la lectura continuada.", "Perquè aquestes tipografies no poden contenir lletres minúscules ni accents en cap idioma.", "Perquè el seu ús incrementa automàticament el pes de les fotografies i altera la resolució.", "Perquè només es poden utilitzar en documents impresos i no es representen en pantalla."],
+    correct: 0,
+    explanation: "Les tipografies script tenen una llegibilitat més baixa i normalment es reserven per a títols."
+  },
+  {
+    text: "Quina diferència hi ha entre interlineat i interlletratge?",
+    options: ["L’interlineat separa línies de text; l’interlletratge separa les lletres entre si.", "L’interlineat modifica el gruix de la lletra; l’interlletratge modifica la saturació del color.", "L’interlineat separa paràgrafs; l’interlletratge separa columnes en una retícula modular.", "L’interlineat mesura els marges de pàgina; l’interlletratge mesura la resolució de la imatge."],
+    correct: 0,
+    explanation: "Interlineat és l’espai entre línies i interlletratge és l’espai entre lletres."
+  },
+  {
+    text: "Quina longitud de línia recomana el temari per facilitar la lectura continuada del cos de text?",
+    options: ["Aproximadament entre 15 i 25 caràcters per línia, sense considerar l’amplada de columna.", "Exactament 90 caràcters per línia, independentment del suport, la mida i la tipografia.", "Aproximadament entre 100 i 140 caràcters per línia, per reduir els salts de línia.", "Aproximadament entre 50 i 75 caràcters per línia, incloent-hi els espais."],
+    correct: 3,
+    explanation: "El temari recomana entre 50 i 75 caràcters per línia, amb ajustos segons l’amplada de columna."
+  },
+  {
+    text: "Quina funció principal té una retícula compositiva?",
+    options: ["Proporcionar guies per posicionar i alinear els elements i obtenir una composició coherent.", "Definir el contingut textual de cada pàgina sense influir en l’alineació ni en la lectura.", "Substituir la jerarquia visual per una distribució igualitària de tots els elements.", "Determinar el sistema de color i el tipus de tinta que s’utilitzarà a la impremta."],
+    correct: 0,
+    explanation: "La retícula facilita la posició i alineació dels elements i aporta ordre, llegibilitat i coherència."
+  },
+  {
+    text: "Què caracteritza una retícula jeràrquica?",
+    options: ["Divideix obligatòriament la pàgina en files i columnes regulars de la mateixa mida.", "Només marca les línies sobre les quals descansa el text i no afecta les imatges.", "És sempre una única columna de text delimitada pels marges interiors i exteriors.", "És flexible i organitza els elements segons la importància de la informació, no amb una malla rígida."],
+    correct: 3,
+    explanation: "La retícula jeràrquica és menys rígida i ordena els elements d’acord amb les necessitats del contingut."
+  },
+  {
+    text: "Quan resulta especialment útil una retícula modular?",
+    options: ["Quan es vol ajustar només la línia base, sense definir zones, mòduls ni columnes.", "Quan només hi ha un bloc continu de text i es vol marcar únicament els marges.", "Quan cal organitzar molts elements i la retícula combina columnes amb files.", "Quan el projecte requereix una composició completament lliure sense cap guia estructural."],
+    correct: 2,
+    explanation: "La retícula modular marca columnes i files i és útil quan s’han d’incloure molts elements."
+  },
+  {
+    text: "Quina comparació entre formats d’imatge és correcta?",
+    options: ["PNG permet transparència i compressió sense pèrdua; JPG és habitual per exportar i RAW conserva dades sense processar.", "RAW és l’opció més comuna per publicar a web; PNG comprimeix sempre amb pèrdua i JPG conserva totes les dades originals.", "GIF és el format estàndard per a fotografies professionals; TIFF guarda animacions i RAW sempre és llegible per qualsevol programa.", "JPG permet transparències i vectors escalables; PNG és un format exclusiu d’animació i RAW és un PDF editable."],
+    correct: 0,
+    explanation: "PNG és útil per a transparències i nitidesa; JPG és habitual per a exportació final; RAW guarda dades no processades de càmera."
+  },
+  {
+    text: "Quina diferència pràctica de resolució presenta habitualment el material per web i per impressió?",
+    options: ["El temari indica 150 ppp per a qualsevol ús, perquè la resolució no depèn del suport.", "El temari indica 72 ppp per a qualsevol impressió i 600 ppp com a mínim per a web.", "El temari indica 300 ppp per a web i 72 ppp per a impressió en tots els casos.", "El temari indica 72 ppp com a referència per a web i 300 ppp per a impressió."],
+    correct: 3,
+    explanation: "Els apunts presenten 72 ppp com a referència web i 300 ppp com a referència d’impressió, segons l’ús."
+  },
+  {
+    text: "Quin efecte té una velocitat d’obturació més llarga?",
+    options: ["Augmenta la profunditat de camp perquè l’obertura del diafragma es tanca automàticament.", "Deixa entrar llum durant més temps i pot registrar el moviment al llarg de l’exposició.", "Redueix el temps de captura i congela qualsevol moviment sense alterar la lluminositat.", "Elimina el soroll del sensor perquè disminueix la sensibilitat ISO de manera obligatòria."],
+    correct: 1,
+    explanation: "Una obturació més llarga capta més llum i pot acumular el moviment durant el temps d’exposició."
+  },
+  {
+    text: "Quina relació entre obertura del diafragma i profunditat de camp descriu el temari?",
+    options: ["Com més gran és l’obertura, menys profunditat de camp i menys zona enfocada.", "Com més gran és l’obertura, més profunditat de camp i més zona enfocada.", "L’obertura no afecta la profunditat de camp, sinó que només determina el format del fitxer.", "La profunditat de camp depèn exclusivament de la velocitat d’obturació i no del diafragma."],
+    correct: 0,
+    explanation: "El temari assenyala que l’obertura té una relació inversa amb la profunditat de camp."
+  },
+  {
+    text: "Quina és la contrapartida habitual d’augmentar l’ISO?",
+    options: ["Converteix la imatge en un vector i evita que la fotografia perdi qualitat en ampliar-la.", "Pot donar més llum a la imatge, però també augmentar el soroll i reduir-ne la qualitat.", "Redueix la lluminositat i elimina el soroll, però obliga a allargar sempre l’obturació.", "Augmenta la profunditat de camp i fa que els objectes es vegin més nítids a tota distància."],
+    correct: 1,
+    explanation: "L’ISO amplifica el senyal i pot augmentar la lluminositat, però també el soroll de la imatge."
+  },
+  {
+    text: "Quin enquadrament és més adequat per mostrar principalment el rostre, les espatlles i el coll?",
+    options: ["El pla sencer, que mostra l’element complet sense tallar-ne cap part.", "El primer pla, habitual en retrats i centrat en l’expressió de la persona.", "El pla americà, que talla la figura aproximadament a l’altura dels genolls.", "El pla ampli, que dedica la major part de la imatge al context o fons."],
+    correct: 1,
+    explanation: "El primer pla inclou espatlles, coll i cara; el primeríssim primer pla és més tancat."
+  },
+  {
+    text: "Quina pràctica respecta els drets d’autor quan s’incorpora una imatge al disseny?",
+    options: ["Assumir que les imatges gratuïtes es poden vendre sense atribució ni condicions addicionals.", "Comprovar la llicència i les condicions d’ús i obtenir el permís necessari quan correspongui.", "Utilitzar qualsevol imatge trobada en línia si es canvia el color i es modifica el retall.", "Eliminar el nom de l’autor perquè la peça gràfica final no reprodueix la imatge sencera."],
+    correct: 1,
+    explanation: "Els apunts adverteixen que utilitzar imatges sense permís pot vulnerar drets d’autor i que cal respectar les llicències."
+  },
+  {
+    text: "Quin principi tècnic distingeix la impressió offset?",
+    options: ["La tinta s’allotja en cavitats gravades d’un cilindre i es transfereix per pressió al suport.", "La tinta travessa una tela porosa que bloqueja les zones on no ha de passar.", "Un fitxer es reprodueix directament sense planxes ni cilindres, per personalitzar exemplars.", "La repulsió entre aigua i tinta grassa, amb transferència de la imatge a través d’un cilindre de cautxú."],
+    correct: 3,
+    explanation: "L’offset fa servir planxes tractades i el principi de repulsió entre aigua i tinta; transfereix la imatge mitjançant cautxú."
+  },
+  {
+    text: "Quina afirmació compara correctament diverses tècniques d’impressió?",
+    options: ["L’offset no utilitza planxes; la serigrafia funciona només en paper llis i la digital requereix sempre cilindres gravats.", "La flexografia usa una planxa flexible per a packaging; la serigrafia imprimeix sobre suports diversos i la digital facilita tiratges curts personalitzats.", "La serigrafia necessita un fitxer sense cap element físic; la impressió digital bloqueja la tinta amb una tela i l’offset imprimeix en relleu flexible.", "El rotogravat és ideal per a una sola còpia; la flexografia fa servir tinta en cavitats i la digital només serveix per a tèxtils."],
+    correct: 1,
+    explanation: "La flexografia usa una planxa flexible; la serigrafia permet imprimir en molts materials; la impressió digital facilita tiratges curts i personalitzats."
+  },
+  {
+    text: "Quina preparació d’arxiu és més adequada per enviar una peça a imprimir?",
+    options: ["Treballar en RGB, exportar a JPG de baixa qualitat i eliminar les marques per reduir el pes.", "Treballar en SVG únicament, deixar les fonts vinculades externament i ometre qualsevol sagnat.", "Treballar en CMYK, apuntar a 300 ppp, incrustar fonts i afegir sagnat i marques de tall.", "Treballar a 72 ppp, convertir els colors especials a RGB i col·locar marques dins del disseny."],
+    correct: 2,
+    explanation: "Els apunts recomanen CMYK, almenys 300 ppp, fonts incrustades o empaquetades, formats de qualitat, sagnat de 3-6 mm i marques de tall."
+  },
+  {
+    text: "Quina definició de publicitat s’ajusta al temari?",
+    options: ["És una tècnica de disseny destinada a crear logotips, sense relació amb el comportament del consumidor.", "És una forma de producció editorial que ordena continguts en llibres, catàlegs i revistes.", "És una comunicació persuasiva que dona a conèixer productes, serveis o idees i influeix en actituds o conductes.", "És una comunicació exclusivament informativa que evita intervenir en les decisions del públic."],
+    correct: 2,
+    explanation: "La publicitat busca donar a conèixer productes, serveis o idees i influir en el comportament o les actituds."
+  },
+  {
+    text: "Quin és l’ordre correcte dels quatre passos publicitaris presentats al temari?",
+    options: ["Interès, acció, atenció i desig.", "Atenció, interès, desig i acció o compra.", "Desig, atenció, compra i interès.", "Atenció, desig, interès i recordatori."],
+    correct: 1,
+    explanation: "El model s’estructura com atenció, interès, desig i acció/compra."
+  },
+  {
+    text: "Quina característica s’associa a la publicitat digital en els apunts?",
+    options: ["Consisteix en anuncis fixos sobre pantalles exteriors sense cap suport o canal en línia.", "Utilitza sobretot suports físics com flyers, díptics, revistes i materials de punt de venda.", "Es difon únicament en canals de televisió i acostuma a requerir una inversió molt elevada.", "Utilitza canals en línia com bàners, correus electrònics i xarxes socials per arribar al públic."],
+    correct: 3,
+    explanation: "La publicitat digital es basa en mitjans en línia i permet assolir impacte amb una inversió relativament petita."
+  },
+  {
+    text: "Quina combinació descriu millor els objectius habituals de la publicitat?",
+    options: ["Augmentar el consum, promocionar ofertes, introduir marques, millorar-ne la imatge i posicionar-les.", "Classificar signes visuals, crear icones, definir significants i diferenciar indicis de símbols.", "Organitzar retícules editorials, definir marges, controlar la resolució i preparar sagnats d’impressió.", "Crear arxius RAW, ampliar profunditat de camp, reduir soroll i establir plans fotogràfics."],
+    correct: 0,
+    explanation: "Els apunts recullen objectius comercials i de marca com incrementar consum, promoure i posicionar productes o marques."
+  },
+  {
+    text: "Quina estratègia respecta millor la resistència natural del públic a sentir-se forçat?",
+    options: ["Augmentar la pressió emocional fins que el receptor senti que no té alternatives possibles.", "Substituir els arguments del públic per instruccions directes i eliminar qualsevol opció de decisió.", "Empatitzar amb l’usuari i presentar un missatge honest que no sembli enganyós o imposat.", "Insistir repetidament en la compra i ocultar qualsevol informació que pugui generar dubtes."],
+    correct: 2,
+    explanation: "La tècnica de la resistència recomana empatia i honestedat perquè el públic no se senti enganyat o obligat."
+  },
+  {
+    text: "Què és l’autopersuasió com a tècnica d’influència?",
+    options: ["Crear escassetat perquè el consumidor actuï ràpidament sense elaborar cap argument propi.", "Ajudar que la persona arribi a la decisió a partir dels seus propis arguments.", "Utilitzar una autoritat externa per imposar una decisió independentment dels motius personals.", "Fer el missatge tan complex que el receptor l’accepti abans de poder-lo analitzar."],
+    correct: 1,
+    explanation: "Les persones tendeixen a creure i seguir més els arguments que consideren propis."
+  },
+  {
+    text: "Quin recurs exemplifica la demostració social?",
+    options: ["Utilitzar una comparació entre dos productes per modificar la percepció del seu valor.", "Presentar una celebritat com a autoritat experta sense aportar cap dada sobre altres usuaris.", "Mostrar una garantia que permet retornar el producte si la decisió no és satisfactòria.", "Mostrar dades o testimonis que indiquen que moltes altres persones han triat o valorat el producte."],
+    correct: 3,
+    explanation: "La demostració social aprofita la tendència a imitar les decisions o conductes d’altres persones."
+  },
+  {
+    text: "Quina tècnica associa un producte a un resultat desitjable que va més enllà de la seva funció directa?",
+    options: ["La terra promesa, que apel·la a aspiracions socials o emocionals del consumidor.", "La garantia, que redueix els dubtes perquè permet desfer o revisar una decisió.", "La fluïdesa, que redueix la complexitat perquè el missatge es processi ràpidament.", "La intenció d’implementació, que converteix objectius generals en accions concretes."],
+    correct: 0,
+    explanation: "La terra promesa ofereix una aspiració emocional o social que supera la necessitat bàsica del producte."
+  },
+  {
+    text: "Què busca l’altercasting en un missatge persuasiu?",
+    options: ["Comparar de forma explícita dos productes per contrastar-ne les característiques i el valor.", "Afegir un gir inesperat per interrompre la lectura i captar l’atenció del receptor.", "Vincular una conducta amb el rol o la identitat social amb què la persona s’identifica.", "Garantir el retorn dels diners per reduir els dubtes que acompanyen una compra."],
+    correct: 2,
+    explanation: "L’altercasting associa la decisió amb una identitat o posició social que la persona vol mantenir."
+  },
+  {
+    text: "Quina diferència hi ha entre garantia i comparació com a recursos persuasius?",
+    options: ["La garantia activa una convenció visual; la comparació representa el conjunt a través d’una part.", "La garantia sorprèn el receptor; la comparació elimina tota necessitat d’argumentar la proposta.", "La garantia genera escassetat; la comparació fa que la persona actuï segons un rol social.", "La garantia redueix la sensació de risc; la comparació modifica el valor percebut segons el referent."],
+    correct: 3,
+    explanation: "La garantia redueix dubtes perquè permet desfer l’acció; la comparació influeix en el valor percebut mitjançant un referent."
+  },
+  {
+    text: "Quina recomanació correspon a la intenció d’implementació?",
+    options: ["Aconseguir que un personatge d’autoritat avali el missatge sense explicar com actuar.", "Utilitzar paraules carregades de connotacions per activar necessitats, sentiments o pors.", "Prometre beneficis emocionals que no depenen del producte ni es poden verificar.", "Definir accions concretes i sense ambigüitats en lloc de limitar-se a objectius massa amplis."],
+    correct: 3,
+    explanation: "La intenció d’implementació fa els objectius accionables concretant accions sense ambigüitats."
+  },
+  {
+    text: "Quan convé emfatitzar guanys en lloc de pèrdues?",
+    options: ["Quan es vol associar un producte a una identitat social en què el públic es reconeix.", "Quan l’acció implica una despesa o inversió i es vol destacar què s’hi obtindrà.", "Quan es vol explicar visualment una idea mitjançant un element que representa una part del tot.", "Quan es vol prevenir un dany i és important explicar les conseqüències de no actuar."],
+    correct: 1,
+    explanation: "Els apunts recomanen centrar-se en els guanys si l’acció implica despesa o inversió i en les pèrdues si es vol prevenir un dany."
+  },
+  {
+    text: "Què és la retòrica visual?",
+    options: ["Una comunicació amb imatges que utilitza figures retòriques per transmetre missatges de manera no literal.", "Un mètode de maquetació que ordena textos en columnes i estableix una jerarquia editorial.", "Una tècnica de marca que determina el nom, la missió i l’estructura corporativa d’una empresa.", "Un sistema tècnic que converteix imatges rasteritzades en vectors i defineix la seva resolució."],
+    correct: 0,
+    explanation: "La retòrica visual trasllada figures retòriques literàries a les imatges per comunicar de manera no literal."
+  },
+  {
+    text: "Quina diferència distingeix metàfora i metonímia visuals?",
+    options: ["La metàfora estableix semblança; la metonímia substitueix elements relacionats lògicament o funcionalment.", "La metàfora repeteix elements semblants; la metonímia juxtaposa elements oposats de la mateixa mida.", "La metàfora representa el tot per una part; la metonímia dota d’atributs humans un objecte.", "La metàfora compara explícitament amb «com»; la metonímia exagera una característica fins al límit."],
+    correct: 0,
+    explanation: "La metàfora parteix de la semblança; la metonímia, d’una relació causal, espacial, temporal o funcional."
+  },
+  {
+    text: "Quina correspondència entre figures retòriques és correcta?",
+    options: ["La sinècdoque representa el tot amb una part; la personificació atribueix qualitats humanes.", "La sinècdoque repeteix un element; la personificació juxtaposa conceptes oposats.", "La sinècdoque relaciona elements per causa; la personificació representa el tot amb una part.", "La sinècdoque exagera una qualitat; la personificació compara explícitament dos elements."],
+    correct: 0,
+    explanation: "La sinècdoque representa el tot a través d’una part; la personificació dona qualitats humanes a objectes o animals."
+  },
+  {
+    text: "Quin recurs utilitza una exageració deliberada per emfatitzar una idea?",
+    options: ["El paral·lelisme.", "La sinècdoque.", "La hipèrbole.", "La metonímia."],
+    correct: 2,
+    explanation: "La hipèrbole exagera una idea o un objecte per donar-li èmfasi."
+  },
+  {
+    text: "Quin sistema cromàtic és additiu i s’associa a la llum de pantalles?",
+    options: ["RYB, que organitza vermell, groc i blau com a model subtractiu tradicional.", "PMS, que identifica colors especials mitjançant una carta normalitzada.", "CMYK, que combina cian, magenta, groc i negre per a la reproducció impresa.", "RGB, que combina intensitats de vermell, verd i blau."],
+    correct: 3,
+    explanation: "RGB és el model additiu emprat en pantalles; CMYK és subtractiu i habitual en impressió."
+  },
+  {
+    text: "Què descriu la profunditat de color d’una imatge digital?",
+    options: ["El nombre de píxels que hi ha en una polzada de la imatge exportada.", "El nombre de canals publicitaris que es combinen per arribar al públic objectiu.", "La quantitat de bits d’informació disponibles per representar el color de cada píxel.", "La distància entre el punt d’enfocament i el fons que apareix nítid a la fotografia."],
+    correct: 2,
+    explanation: "La profunditat de color és la quantitat de bits d’informació que representen el color de cada píxel."
+  },
+  {
+    text: "Quina distinció entre to, saturació i lluminositat és correcta?",
+    options: ["El to identifica el color, la saturació la intensitat o puresa i la lluminositat la claredat o foscor.", "El to defineix la quantitat de tinta negra, la saturació defineix el canal i la lluminositat la tipografia.", "El to determina la resolució, la saturació determina la mida i la lluminositat determina el format.", "El to indica el contrast entre paràgrafs, la saturació el nombre de colors i la lluminositat el sagnat."],
+    correct: 0,
+    explanation: "Són tres dimensions diferents: identitat del color, intensitat/puresa i claredat/foscor."
+  },
+  {
+    text: "Quin ordre de treball ajuda a crear una harmonia cromàtica segons el temari?",
+    options: ["Repartir el mateix nombre de colors entre elements, sense considerar el missatge ni el públic destinatari.", "Triar fons i dominant, variar el to, comprovar compatibilitats i limitar el nombre de colors.", "Triar tots els colors disponibles, afegir-ne més per contrast i determinar el fons a l’últim pas.", "Fixar primer tots els textos, convertir-los a blanc i negre i escollir el canal en funció del resultat."],
+    correct: 1,
+    explanation: "Els apunts proposen triar fons i color dominant, fer variacions, buscar compatibilitats i limitar el nombre de colors."
+  },
+  {
+    text: "Quina afirmació sobre les associacions del color és coherent amb els apunts?",
+    options: ["El blau s’associa sovint amb confiança, neteja o tecnologia, però el significat dels colors també varia culturalment.", "El blanc té un significat universal i invariable, de manera que no cal comprovar les associacions del públic local.", "El verd només s’utilitza per promocionar productes financers i no té relació amb la natura o els productes ecològics.", "El taronja s’associa principalment amb la formalitat corporativa i sempre indica neutralitat, sigui quin sigui el context."],
+    correct: 0,
+    explanation: "Els apunts associen el blau amb confiança, neteja i tecnologia, i remarquen que les associacions cromàtiques varien segons la cultura."
+  },
+  {
+    text: "Què és el branding segons el temari?",
+    options: ["El procés d’impressió dels elements corporatius en materials de gran format i packaging.", "El sistema que converteix imatges fotogràfiques en formats vectorials escalables.", "El conjunt d’estratègies que defineixen la marca, els seus valors, posicionament i sensacions.", "La representació tipogràfica del nom de la marca, sense cap decisió estratègica prèvia."],
+    correct: 2,
+    explanation: "El branding és anterior al logotip i inclou concepte, missió, objectius, valors i posicionament."
+  },
+  {
+    text: "Quina llista recull els components de branding esmentats als apunts?",
+    options: ["RGB, CMYK, Pantone, RAL i profunditat de color com a elements que defineixen una marca.", "Definició, naming, identitat visual, posicionament, lleialtat i arquitectura com a dimensions estratègiques de marca.", "Atenció, interès, desig, compra i fidelització com a seqüència única de totes les campanyes.", "Brief, moodboard, esbossos, retícula i sagnat com a fases obligatòries de qualsevol publicació."],
+    correct: 1,
+    explanation: "Els apunts desenvolupen definició, naming, identitat visual, posicionament, lleialtat i arquitectura; la pregunta demana reconèixer el conjunt presentat."
+  },
+  {
+    text: "Quina diferència hi ha entre imagotip i isologo?",
+    options: ["En l’imagotip imita una signatura manuscrita; en l’isologo representa una figura abstracta sense text.", "En l’imagotip la imatge i el text es poden separar; en l’isologo estan integrats.", "En l’imagotip només hi ha text; en l’isologo només hi ha una inicial de la marca.", "En l’imagotip les inicials formen un monograma; en l’isologo les síl·labes es llegeixen lletrejades."],
+    correct: 1,
+    explanation: "El temari defineix imagotip com imatge i text separables i isologo com imatge i text integrats."
+  },
+  {
+    text: "Quins criteris convé comprovar en avaluar un logotip?",
+    options: ["Que utilitzi molts colors, detalls complexos, una moda vigent i una tipografia poc llegible.", "Que sigui idèntic al dels competidors i que només funcioni en un únic suport de publicitat.", "Que incorpori totes les variants de marca i que es redissenyi periòdicament encara que funcioni bé.", "Que s’entengui ràpid, sigui memorable, versàtil, atemporal, distintiu i adequat al públic."],
+    correct: 3,
+    explanation: "Els apunts proposen valorar comprensió ràpida, associació amb l’empresa, simplicitat, memorabilitat, versatilitat, atemporalitat, singularitat i adequació al públic."
+  },
+  {
+    text: "Quina finalitat principal tenen les infografies segons el temari?",
+    options: ["Mostrar informació densa de manera visual perquè sigui fàcil de llegir, entendre i recordar.", "Presentar el màxim de text possible perquè el lector interpreti autònomament cada detall.", "Convertir automàticament qualsevol document escrit en una animació sense revisar-ne el missatge.", "Substituir totes les dades per imatges decoratives sense explicar-ne la relació amb el tema."],
+    correct: 0,
+    explanation: "Les infografies presenten informació densa visualment per facilitar lectura, comprensió, record i interès."
+  },
+  {
+    text: "Quins tres principis bàsics ha de complir una bona infografia?",
+    options: ["Utilitat, valor i bellesa.", "Atenció, compra i posicionament.", "Contrast, retícula i enquadrament.", "Resolució, saturació i profunditat."],
+    correct: 0,
+    explanation: "El temari destaca utilitat, valor i bellesa com a principis fonamentals de les infografies."
+  },
+  {
+    text: "Quin ús d’infografia encaixa millor amb l’objectiu de comunicar dades d’una recerca clarament?",
+    options: ["L’ús de màrqueting, orientat principalment a captar l’atenció amb interessos comercials.", "L’ús acadèmic o científic, orientat a comunicar informació de manera clara.", "L’ús descriptiu, centrat específicament a explicar com és un producte o servei.", "L’ús interactiu, que obliga necessàriament el públic a configurar cada dada presentada."],
+    correct: 1,
+    explanation: "Els apunts distingeixen l’ús acadèmic/científic, el descriptiu i el de màrqueting segons l’objectiu."
+  },
+  {
+    text: "Quina característica defineix una infografia estàtica?",
+    options: ["El contingut es presenta com una imatge fixa i l’espectador el mira i el llegeix.", "El contingut canvia segons les cerques i les opcions que selecciona l’usuari.", "La informació es presenta necessàriament com una animació amb so i moviment.", "La peça és un document amb vinyetes que obliga a seguir una seqüència interactiva."],
+    correct: 0,
+    explanation: "Una infografia estàtica presenta contingut fix en forma d’imatge, sense interacció ni moviment."
+  },
+  {
+    text: "Quina diferència separa una infografia de moviment d’una interactiva?",
+    options: ["La de moviment té contingut dinàmic triat per l’usuari; la interactiva només permet observar un vídeo fix.", "La de moviment només funciona amb text escrit; la interactiva només funciona amb fotografies.", "La de moviment és sempre una imatge estàtica; la interactiva és necessàriament un document imprès.", "La de moviment presenta una seqüència animada; la interactiva permet que l’usuari actuï sobre el contingut."],
+    correct: 3,
+    explanation: "Les infografies de moviment són animacions amb contingut fix; les interactives permeten clicar, cercar i configurar la informació."
+  },
+  {
+    text: "Quina estructura resulta coherent per explicar una qüestió mitjançant una infografia?",
+    options: ["Introduir el tema, presentar el problema si n’hi ha, exposar l’argument central i concloure.", "Presentar les fonts al final sense verificar-les, mostrar decoracions i evitar resumir el missatge.", "Començar per una conclusió, ocultar les dades i introduir el tema quan el lector ja ha acabat.", "Dissenyar primer els gràfics, afegir dades disponibles després i deixar el problema sense definir."],
+    correct: 0,
+    explanation: "L’estructura del temari inclou introducció del tema, problema o pregunta, argument central i conclusió."
+  },
+  {
+    text: "Quin principi ha de guiar el disseny abans de decidir-ne la forma visual?",
+    options: ["Definir clarament el missatge, perquè el disseny ha de respondre al que es vol comunicar.", "Escollir primer una retícula atractiva i adaptar després el missatge a l’espai sobrant.", "Seleccionar una paleta cromàtica completa i deixar que els colors determinin el contingut.", "Crear primer totes les icones i limitar la informació a allò que aquestes puguin representar."],
+    correct: 0,
+    explanation: "El temari diu que el missatge ha de dictar el disseny i no a l’inrevés."
+  },
+  {
+    text: "Quin procediment és més adequat per preparar el contingut d’una infografia?",
+    options: ["Obtenir les dades, verificar que les fonts siguin fiables i definir el format visual adequat.", "Copiar les dades més cridaneres, ometre la procedència i deixar que el lector n’avaluï la credibilitat.", "Dibuixar primer les icones, afegir després informació de qualsevol origen i no jerarquitzar-la.", "Triar el format, afegir les dades disponibles sense revisió i comprovar les fonts només si sobra temps."],
+    correct: 0,
+    explanation: "Els passos indicats són obtenir i revisar les dades, verificar fonts fiables i decidir com mostrar visualment el contingut."
+  },
+  {
+    text: "Per què és útil un storyboard durant la creació d’una infografia o contingut animat?",
+    options: ["Determina automàticament les dades correctes i elimina la necessitat d’investigar les fonts.", "Garanteix la resolució final de les imatges i converteix les fonts tipogràfiques en contorns.", "Permet ordenar visualment els punts clau i anticipar la seqüència abans de fer el disseny final.", "Substitueix la retícula, la tipografia i la jerarquia perquè ja defineix tots els detalls visuals finals."],
+    correct: 2,
+    explanation: "Un storyboard organitza les escenes o punts clau i el seu ordre, sovint amb text explicatiu."
+  },
+  {
+    text: "Quina decisió cromàtica és més coherent en una infografia?",
+    options: ["Assignar un color diferent a cada dada encara que no hi hagi cap criteri d’agrupació.", "Utilitzar el color amb intenció per agrupar o destacar informació, sense saturar la composició.", "Evitar qualsevol relació cromàtica perquè els colors dificulten necessàriament la interpretació de dades.", "Utilitzar només colors intensos en tots els elements perquè cap informació sembli secundària."],
+    correct: 1,
+    explanation: "El color pot dirigir la mirada, però un excés pot saturar la composició i reduir-ne l’eficàcia."
+  },
+  {
+    text: "Com s’ha d’utilitzar la tipografia en una infografia amb dades i explicacions?",
+    options: ["Amb el màxim nombre de famílies possibles perquè cada dada tingui un caràcter visual diferent.", "Amb una mateixa mida i pes a tots els textos, independentment de la seva importància.", "Amb tipografies decoratives en tots els paràgrafs per mantenir l’atenció de principi a fi.", "Amb nivells clars i text llegible que ajudin a distingir títols, dades i informació complementària."],
+    correct: 3,
+    explanation: "La tipografia ha de facilitar la lectura i la jerarquia, no competir amb el contingut."
+  },
+  {
+    text: "Quin avantatge aporta una retícula a una infografia?",
+    options: ["Permet ometre els marges i col·locar els elements sense alineació per donar espontaneïtat.", "Substitueix la verificació de fonts perquè una composició ordenada garanteix que les dades siguin fiables.", "Ajuda a distribuir blocs i gràfics amb coherència i a mantenir un recorregut visual ordenat.", "Assegura que totes les dades tinguin la mateixa importància, encara que expressin resultats diferents."],
+    correct: 2,
+    explanation: "La retícula organitza la composició, però la fiabilitat de les dades depèn de la investigació i les fonts."
+  },
+  {
+    text: "Què estudia la semiòtica visual?",
+    options: ["Com mesurar el grau d’impacte comercial d’una marca després d’una campanya publicitària.", "Com optimitzar la compressió d’imatges vectorials i seleccionar la resolució d’impressió.", "Com distribuir textos en columnes, establir marges i definir una jerarquia tipogràfica.", "Com interpretem elements visuals com imatges, objectes, símbols i gestos en la comunicació."],
+    correct: 3,
+    explanation: "La semiòtica visual estudia la interpretació dels elements visuals emprats per comunicar."
+  },
+  {
+    text: "Quina diferència hi ha entre significant i significat?",
+    options: ["El significant és el canal de difusió; el significat és el mitjà d’impressió que s’ha seleccionat.", "El significant és la forma material o visual del signe; el significat és el concepte que representa.", "El significant és la intenció de l’emissor; el significat és el pressupost de producció del projecte.", "El significant és el context cultural del receptor; el significat és la resolució final de la imatge."],
+    correct: 1,
+    explanation: "Un signe relaciona una forma perceptible (significant) amb el concepte o lectura que representa (significat)."
+  },
+  {
+    text: "Quin exemple correspon a un indici en semiòtica?",
+    options: ["Veure núvols foscos i inferir que pot acostar-se una tempesta, per relació causal.", "Veure la inicial d’una marca i llegir-la com el nom complet sense una relació causal.", "Veure una forma abstracta que una cultura ha acordat utilitzar per representar una idea.", "Veure una fotografia d’un arbre i reconèixer l’arbre per la semblança física de la imatge."],
+    correct: 0,
+    explanation: "Un indici manté una relació de dependència o causa-efecte amb allò que significa."
+  },
+  {
+    text: "Quan una fotografia d’un objecte actua com una icona?",
+    options: ["Quan el seu significat depèn només d’una convenció apresa sense cap semblança física.", "Quan s’assembla visualment a l’objecte representat i aquesta semblança permet reconèixer-lo.", "Quan només pot ser interpretada per la persona que ha creat la composició original.", "Quan és conseqüència directa d’un fenomen i manté una relació de causa-efecte amb ell."],
+    correct: 1,
+    explanation: "Les icones es caracteritzen per la semblança física amb l’objecte que representen."
+  },
+  {
+    text: "Quina característica defineix un símbol en el model del temari?",
+    options: ["La forma s’assembla necessàriament a l’objecte i és reconeixible sense haver après res.", "El signe és un efecte físic directe del concepte, com el fum que indica una combustió.", "El significat depèn d’una convenció apresa i no d’una semblança o relació causal directa.", "El signe ha de ser una fotografia real, ja que les formes abstractes no poden tenir significat."],
+    correct: 2,
+    explanation: "El símbol requereix que el receptor conegui i associï una convenció amb el significat."
+  },
+  {
+    text: "Quina pràctica millora la comprensió d’una icona potencialment ambigua?",
+    options: ["Fer servir totes les icones possibles perquè el nombre d’elements elimini la possibilitat d’ambigüitat.", "Afegir més detalls decoratius i assumir que el públic interpretarà el mateix que el dissenyador.", "Fer-la intuïtiva per al públic i reforçar-la amb text si la interpretació no és clara.", "Canviar-ne l’estil a cada pantalla perquè l’usuari identifiqui les icones per la seva novetat."],
+    correct: 2,
+    explanation: "Les bones pràctiques recomanen icones intuïtives i suport textual quan el significat no queda clar."
+  },
+  {
+    text: "Què recomana el temari sobre l’ús de famílies d’icones?",
+    options: ["Escollir les icones només per la seva mida, sense considerar la coherència visual o el context cultural.", "Utilitzar sempre exactament dues famílies i canviar-les a cada pàgina per evitar repeticions.", "Mantenir una família coherent per projecte, o com a màxim dues, per preservar la unitat estètica.", "Combinar moltes famílies diferents perquè cada icona sembli creada específicament per a la seva funció."],
+    correct: 2,
+    explanation: "El temari recomana una sola família d’icones per projecte, com a màxim dues."
+  },
+  {
+    text: "Quina associació entre estils d’icones és correcta?",
+    options: ["El flat representa objectes en tres dimensions sobre un cub; l’skeuomòrfic usa formes monocromàtiques per a mides petites.", "El flat es construeix amb píxels sobre una quadrícula; l’skeuomòrfic es limita a contorns senzills sense ornaments.", "El flat imita materials reals amb ombres; l’skeuomòrfic elimina detalls i utilitza només colors plans.", "El flat és minimalista i usa formes planes; l’skeuomòrfic imita objectes reals amb detalls i ombres."],
+    correct: 3,
+    explanation: "El flat design redueix els detalls i utilitza formes planes; l’estil skeuomòrfic imita objectes reals amb elements detallats."
+  },
+  {
+    text: "Quina limitació s’assenyala per a les icones d’estil outline?",
+    options: ["No permeten escalar-se perquè són sempre imatges de píxels sense cap element vectorial.", "En mides molt petites poden perdre visibilitat o dificultar la comprensió dels contorns.", "Només serveixen per animar llistes i no poden representar objectes ni accions en una interfície.", "No poden utilitzar línies corbes i només admeten formes tridimensionals amb ombres molt marcades."],
+    correct: 1,
+    explanation: "Les icones outline són de contorns simples, però no es recomanen a mides molt petites."
+  },
+  {
+    text: "Quina associació de format i ús d’icones és correcta?",
+    options: ["JPG admet transparències i animacions, mentre que PDF només pot contenir text pla.", "PNG és vectorial i escalable sense pèrdua, mentre que SVG només admet imatges de píxels.", "SVG és vectorial i escalable, mentre que PNG pot oferir transparència però no és vectorial.", "GIF és el millor format editable per a tots els logotips perquè conserva qualsevol vector."],
+    correct: 2,
+    explanation: "SVG és vectorial; PNG és un format ràster que pot conservar transparències però no s’escala com un vector."
+  },
+  {
+    text: "Quina correspondència entre estils d’icones és correcta?",
+    options: ["Les isomètriques només utilitzen contorns sense profunditat; les glyph imiten fotografies realistes i les pixel són vectors escalables.", "Les isomètriques es reserven per a animacions; les glyph combinen totes les famílies i les pixel eviten qualsevol quadrícula.", "Les isomètriques són sempre planes; les glyph es basen en ombres realistes i les pixel representen només lletres tipogràfiques.", "Les icones isomètriques suggereixen volum; les glyph són monocromàtiques i les pixel segueixen una quadrícula de píxels."],
+    correct: 3,
+    explanation: "L’estil isomètric representa volum; glyph usa formes monocromàtiques i pixel icons es construeixen sobre una quadrícula de píxels."
+  },
+  {
+    text: "Quin objectiu té la part de cronologia en un storyboard?",
+    options: ["Determinar el pressupost publicitari i el posicionament de marca després de la campanya.", "Decidir la paleta cromàtica definitiva i els tipus de paper per a la producció final.", "Definir la resolució d’exportació i el format que conservarà les imatges vectorials.", "Establir quins fets apareixeran i l’ordre en què s’explicaran o es mostraran."],
+    correct: 3,
+    explanation: "La cronologia identifica els esdeveniments principals i ordena la seqüència del storyboard."
+  },
+  {
+    text: "Quina utilitat té iterar un storyboard?",
+    options: ["Converteix automàticament el storyboard en una peça impresa a 300 ppp sense cap altra fase.", "Permet revisar i detallar les vinyetes abans de desenvolupar la composició o animació definitiva.", "Substitueix la investigació del públic i garanteix que totes les escenes siguin interpretades igual.", "Evita haver de revisar el contingut perquè la primera versió ja ha de ser exacta i final."],
+    correct: 1,
+    explanation: "El temari permet diverses iteracions per definir millor les vinyetes abans de la peça definitiva."
+  },
+];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Shuffle answer options while keeping track of the correct one
+function shuffleOptions(q) {
+  const indices = [0, 1, 2, 3].slice(0, q.options.length);
+  const shuffledIndices = shuffle(indices);
+  const newOptions = shuffledIndices.map(i => q.options[i]);
+  const newCorrect = shuffledIndices.indexOf(q.correct);
+  return { ...q, options: newOptions, correct: newCorrect };
+}
+
+let QUESTIONS = [];
+let currentMode = 100;
+const LETTERS = ['a','b','c','d'];
+
+let current = 0;
+let answers = [];
+let answered = [];
+
+function startQuiz(size) {
+  currentMode = size;
+  const raw = shuffle(ALL_QUESTIONS).slice(0, size);
+  QUESTIONS = raw.map(shuffleOptions);
+  current = 0;
+  answers = new Array(QUESTIONS.length).fill(null);
+  answered = new Array(QUESTIONS.length).fill(false);
+
+  document.getElementById('mode-screen').style.display = 'none';
+  document.getElementById('quiz-area').style.display = 'flex';
+
+  buildMinimap();
+  renderQuestion();
+  updateScoreboard();
+}
+
+function goToModeSelect() {
+  document.getElementById('results-panel').classList.remove('show');
+  document.getElementById('q-card').style.display = 'block';
+  document.getElementById('minimap').style.display = 'flex';
+  document.querySelector('.scoreboard').style.display = 'grid';
+  document.getElementById('quiz-area').style.display = 'none';
+  document.getElementById('mode-screen').style.display = 'block';
+}
+
+function buildMinimap() {
+  const mm = document.getElementById('minimap');
+  mm.innerHTML = '';
+  QUESTIONS.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'mm-dot';
+    d.title = 'Pregunta ' + (i+1);
+    d.onclick = () => goTo(i);
+    mm.appendChild(d);
+  });
+  updateMinimap();
+}
+
+function updateMinimap() {
+  const dots = document.querySelectorAll('.mm-dot');
+  dots.forEach((d, i) => {
+    d.className = 'mm-dot';
+    if (answered[i]) {
+      d.classList.add(answers[i] === QUESTIONS[i].correct ? 'answered-ok' : 'answered-err');
+    }
+    if (i === current) d.classList.add('current');
+  });
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[current];
+  if (!q) return; // Guard against undefined questions
+  document.getElementById('q-num').textContent = (current+1) + '.';
+  document.getElementById('q-text').textContent = q.text;
+
+  const optEl = document.getElementById('options');
+  optEl.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="opt-letter">${LETTERS[i]}</span><span class="opt-text">${opt}</span>`;
+    btn.onclick = () => selectAnswer(i);
+    if (answered[current]) {
+      btn.disabled = true;
+      if (i === q.correct) btn.classList.add('correct-ans');
+      if (answers[current] === i && answers[current] !== q.correct) btn.classList.add('wrong-ans');
+    }
+    optEl.appendChild(btn);
+  });
+
+  const fb = document.getElementById('feedback');
+  if (answered[current]) {
+    const ok = answers[current] === q.correct;
+    fb.className = 'feedback show';
+    const fbIcon = document.getElementById('fb-icon');
+    const fbText = document.getElementById('fb-text');
+    if (fbIcon) { fbIcon.textContent = ok ? 'OK' : 'NO'; fbIcon.className = 'feedback-icon ' + (ok ? 'ok' : 'err'); }
+    if (fbText) document.getElementById('fb-text').textContent =
+      (ok ? 'Correcte. ' : 'Incorrecte. La resposta correcta és "' + q.options[q.correct] + '". ') + q.explanation;
+  } else {
+    fb.className = 'feedback';
+  }
+
+  const prevBtn = document.getElementById('btn-prev');
+  // Hide completely on first question, show otherwise
+  prevBtn.disabled = (current === 0);
+
+  const SVG_NEXT = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="4" y1="10" x2="17" y2="10" stroke="white" stroke-width="1.5" stroke-linecap="square"/><polyline points="12,4 17,10 12,16" stroke="white" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter" fill="none"/></svg>`;
+  // End symbol: → with vertical bar (⊣ style)
+  const SVG_END  = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="4" y1="10" x2="14" y2="10" stroke="white" stroke-width="1.5" stroke-linecap="square"/><polyline points="10,4 15,10 10,16" stroke="white" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter" fill="none"/><line x1="16" y1="4" x2="16" y2="16" stroke="white" stroke-width="1.5" stroke-linecap="square"/></svg>`;
+
+  const allAnswered = answered.every(Boolean);
+  const nextBtn = document.getElementById('btn-next');
+  if (current === QUESTIONS.length - 1 && allAnswered) {
+    nextBtn.innerHTML = SVG_END;
+    nextBtn.title = 'Veure resultats';
+    nextBtn.onclick = showResults;
+    nextBtn.className = 'nav-btn primary';
+    nextBtn.disabled = false;
+  } else if (current === QUESTIONS.length - 1) {
+    nextBtn.innerHTML = SVG_NEXT;
+    nextBtn.title = 'Última pregunta';
+    nextBtn.disabled = true;
+    nextBtn.onclick = null;
+    nextBtn.className = 'nav-btn primary';
+  } else {
+    nextBtn.innerHTML = SVG_NEXT;
+    nextBtn.title = 'Següent';
+    nextBtn.disabled = false;
+    nextBtn.onclick = () => navigate(1);
+    nextBtn.className = 'nav-btn primary';
+  }
+
+  updateMinimap();
+  updateScoreboard();
+}
+
+function selectAnswer(idx) {
+  if (answered[current]) return;
+  answers[current] = idx;
+  answered[current] = true;
+  renderQuestion();
+
+  const isCorrect = idx === QUESTIONS[current].correct;
+  if (isCorrect && current < QUESTIONS.length - 1) {
+    setTimeout(() => { current++; renderQuestion(); }, 700);
+  }
+}
+
+function navigate(dir) {
+  const next = current + dir;
+  if (next >= 0 && next < QUESTIONS.length) {
+    current = next;
+    renderQuestion();
+  }
+}
+
+function goTo(i) {
+  current = i;
+  renderQuestion();
+}
+
+function updateScoreboard() {
+  const total = QUESTIONS.length;
+  const done = answered.filter(Boolean).length;
+  const correct = answers.filter((a, i) => answered[i] && QUESTIONS[i] && a === QUESTIONS[i].correct).length;
+  const wrong = done - correct;
+  const pct = done > 0 ? Math.round((correct / done) * 100) : null;
+  const rawScore = correct * 1 - wrong * 0.5;
+  const nota = done > 0 ? Math.max(0, (rawScore / total) * 10).toFixed(2) : null;
+
+  document.getElementById('sc-ok').textContent = correct;
+  document.getElementById('sc-err').textContent = wrong;
+  document.getElementById('sc-rem').textContent = total - done;
+  document.getElementById('sc-pct').textContent = pct !== null ? pct + '%' : '—';
+  document.getElementById('sc-nota').textContent = nota !== null ? nota : '—';
+}
+
+function showResults() {
+  document.getElementById('q-card').style.display = 'none';
+  document.getElementById('minimap').style.display = 'none';
+  document.querySelector('.scoreboard').style.display = 'none';
+  const panel = document.getElementById('results-panel');
+  panel.classList.add('show');
+
+  const total = QUESTIONS.length;
+  const correct = answers.filter((a, i) => QUESTIONS[i] && a === QUESTIONS[i].correct).length;
+  const wrong = total - correct;
+  const pct = Math.round((correct / total) * 100);
+  const rawScore = correct * 1 - wrong * 0.5;
+  const nota = Math.max(0, (rawScore / total) * 10).toFixed(2);
+  const n = parseFloat(nota);
+
+  const notaEl = document.getElementById('res-nota');
+  notaEl.textContent = nota;
+  if (n < 5)       notaEl.style.color = 'var(--red)';
+  else if (n < 6)  notaEl.style.color = '#e07000';
+  else if (n < 7.5) notaEl.style.color = '#b89000';
+  else if (n < 9)  notaEl.style.color = 'var(--green)';
+  else             notaEl.style.color = '#1a5fa0';
+
+  document.getElementById('res-ok').textContent = correct;
+  document.getElementById('res-err').textContent = wrong;
+  document.getElementById('res-pct').textContent = pct + '%';
+  document.getElementById('res-pts').textContent = Math.max(0, rawScore).toFixed(1);
+
+  let grade = '';
+  if (n >= 9) grade = 'Excel·lent — domini alt del temari.';
+  else if (n >= 7) grade = 'Bé — algunes àrees a repassar.';
+  else if (n >= 5) grade = 'Suficient — cal reforçar conceptes.';
+  else grade = 'Insuficient — repassa el material.';
+  document.getElementById('res-grade').textContent = grade;
+
+  const review = document.getElementById('res-review');
+  const wrongItems = QUESTIONS.map((q, i) => ({q, i})).filter(({q, i}) => q && answers[i] !== q.correct);
+
+  if (wrongItems.length === 0) { review.innerHTML = ''; return; }
+
+  let html = '<div class="res-review-title">Preguntes incorrectes (' + wrongItems.length + ')</div>';
+  let itemsHtml = '';
+  wrongItems.forEach(({q, i}) => {
+    if (!q) return; // Skip if question is undefined
+    itemsHtml += `<div class="review-item">
+      <div class="review-num">${String(i+1).padStart(2,'0')}</div>
+      <div>
+        <div class="review-q">${q.text.length > 70 ? q.text.substring(0,70)+'\u2026' : q.text}</div>
+        <div class="review-ans">Correcta: <span>${q.options[q.correct]}</span></div>
+      </div>
+    </div>`;
+  });
+  if (itemsHtml) {
+    html += '<div class="review-items-container">' + itemsHtml + '</div>';
+  }
+  review.innerHTML = html;
+}
+
+function restart() {
+  const raw = shuffle(ALL_QUESTIONS).slice(0, currentMode);
+  QUESTIONS = raw.map(shuffleOptions);
+  current = 0;
+  answers = new Array(QUESTIONS.length).fill(null);
+  answered = new Array(QUESTIONS.length).fill(false);
+  document.getElementById('q-card').style.display = 'block';
+  document.getElementById('minimap').style.display = 'flex';
+  document.querySelector('.scoreboard').style.display = 'grid';
+  document.getElementById('results-panel').classList.remove('show');
+  buildMinimap();
+  renderQuestion();
+  updateScoreboard();
+}
+
+// Start on mode selection — don't auto-start
+
+</script>
+</body>
+</html>
