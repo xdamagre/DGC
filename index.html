@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Questionari — Disseny i Producte I</title>
+<title>Questionari</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
 
@@ -602,7 +602,7 @@
     <header>
       <div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
-          <div class="header-label" style="margin-bottom:0;">Disseny i Producte I</div>
+          <div class="header-label" id="subject" style="margin-bottom:0;"></div>
           <div class="header-label" style="margin-bottom:0;">David Martínez Gregorio</div>
         </div>
         <h1>Tria el mode<br>de pràctica</h1>
@@ -638,13 +638,7 @@
     <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--gray-400);letter-spacing:0.05em;">
       Les preguntes i les respostes es barregen aleatòriament en cada sessió.
     </p>
-    <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
-      <div id="load-status" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gray-600);">Carregant preguntes…</div>
-      <label style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;border:1px solid var(--black);padding:6px 12px;cursor:pointer;background:var(--white);">
-        Carrega preguntes.txt
-        <input type="file" id="file-input" accept=".txt,text/plain" hidden>
-      </label>
-    </div>
+    <div id="load-status" style="margin-top:16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--red);"></div>
   </div>
 
   <!-- QUIZ AREA -->
@@ -773,7 +767,12 @@ let ALL_QUESTIONS = [];
 // Línia 1 = pregunta · línies 2-5 = respostes (la 1a resposta és SEMPRE la correcta).
 // Les línies que comencen per # s'ignoren (comentaris).
 function parseQuestions(txt) {
-  const blocks = txt.replace(/^\uFEFF/, '').replace(/\r/g, '').split(/\n\s*\n/);
+  txt = txt.replace(/^\uFEFF/, '').replace(/\r/g, '');
+  // La primera línia no buida del fitxer és el nom de la matèria
+  const m = txt.match(/^\s*([^\n]+)\n?/);
+  const subject = m ? m[1].trim() : '';
+  if (m) txt = txt.slice(m[0].length);
+  const blocks = txt.split(/\n\s*\n/);
   const out = [];
   let bad = 0;
   blocks.forEach(b => {
@@ -782,46 +781,35 @@ function parseQuestions(txt) {
     if (lines.length !== 5) { bad++; return; }
     out.push({ text: lines[0], options: lines.slice(1), correct: 0, explanation: '' });
   });
-  return { out, bad };
+  return { out, bad, subject };
 }
 
 function esc(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-function setQuestions(txt, source) {
-  const { out, bad } = parseQuestions(txt);
+function setQuestions(txt) {
+  const { out, bad, subject } = parseQuestions(txt);
   ALL_QUESTIONS = out;
+  document.getElementById('subject').textContent = subject;
+  document.title = subject ? 'Questionari — ' + subject : 'Questionari';
   const st = document.getElementById('load-status');
-  let msg = out.length + ' preguntes carregades' + (source ? ' (' + source + ')' : '') + '.';
-  if (bad) msg += ' ⚠ ' + bad + ' bloc(s) ignorat(s): cal 1 pregunta + 4 respostes.';
-  if (!out.length) msg = '⚠ No s\u2019ha trobat cap pregunta vàlida.';
-  st.textContent = msg;
-  st.style.color = (bad || !out.length) ? 'var(--red)' : 'var(--gray-600)';
+  st.textContent = '';
+  if (bad) st.textContent = '\u26A0 ' + bad + ' bloc(s) ignorat(s): cal 1 pregunta + 4 respostes.';
+  if (!out.length) st.textContent = '\u26A0 No s\u2019ha trobat cap pregunta vàlida a preguntes.txt.';
 }
 
 function loadFromServer() {
-  const st = document.getElementById('load-status');
   fetch('preguntes.txt', { cache: 'no-store' })
     .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
-    .then(t => setQuestions(t, 'preguntes.txt'))
+    .then(setQuestions)
     .catch(() => {
-      st.textContent = 'No s\u2019ha pogut llegir preguntes.txt automàticament (normal si obres l\u2019HTML com a fitxer local). Carrega\u2019l manualment:';
-      st.style.color = 'var(--red)';
+      document.getElementById('load-status').textContent =
+        '\u26A0 No s\u2019ha pogut llegir preguntes.txt. Cal que estigui a la mateixa carpeta i que la pàgina s\u2019obri des d\u2019un servidor (no com a fitxer local).';
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('file-input').addEventListener('change', e => {
-    const f = e.target.files[0];
-    if (!f) return;
-    const r = new FileReader();
-    r.onload = () => setQuestions(r.result, f.name);
-    r.readAsText(f, 'utf-8');
-    e.target.value = '';
-  });
-  loadFromServer();
-});
+document.addEventListener('DOMContentLoaded', loadFromServer);
 
 
 function shuffle(arr) {
